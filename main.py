@@ -41,12 +41,9 @@ class AvailabilityApp(ft.UserControl):
         return self.feedback_text
 
     def create_grid(self):
-        grid = ft.GridLayout(
-            columns=HOURS_IN_DAY,  # Each column represents an hour
-            spacing=2,
-            expand=True,
-        )
+        rows = []
         for day_index in range(len(DAYS_OF_WEEK)):
+            row = ft.Row(spacing=2)
             for hour in range(HOURS_IN_DAY):
                 cell = ft.Container(
                     on_click=self.on_click(day_index, hour),
@@ -56,8 +53,9 @@ class AvailabilityApp(ft.UserControl):
                     height=30,
                     border=ft.Border.all(1, ft.colors.BLACK),
                 )
-                grid.controls.append(cell)
-        return grid
+                row.controls.append(cell)
+            rows.append(row)
+        return ft.Column(controls=rows, spacing=2)
 
     def get_cell_color(self, day, hour):
         if self.shared_availability[day][hour] > 0:
@@ -90,10 +88,9 @@ class AvailabilityApp(ft.UserControl):
         self.feedback_text.update()
 
     def update_grid(self):
-        for i, cell in enumerate(self.grid.controls):
-            day = i // HOURS_IN_DAY
-            hour = i % HOURS_IN_DAY
-            cell.bgcolor = self.get_cell_color(day, hour)
+        for day_index, row in enumerate(self.grid.controls):
+            for hour_index, cell in enumerate(row.controls):
+                cell.bgcolor = self.get_cell_color(day_index, hour_index)
         self.grid.update()
 
 def main(page: ft.Page):
