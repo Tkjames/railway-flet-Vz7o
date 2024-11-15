@@ -1,5 +1,6 @@
 import flet as ft
 import os
+
 # Constants
 DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 HOURS_IN_DAY = 24
@@ -101,7 +102,4 @@ def main(page: ft.Page):
     page.add(AvailabilityApp())
 
 if __name__ == "__main__":
-    ft.app(target=main)
-
-
-ft.app(target=main, view=None, port=int(os.getenv("PORT", 8502)))
+    ft.app(target=main, view=None, port=int(os.getenv("PORT", 8502)))
