@@ -44,8 +44,7 @@ class AvailabilityApp(ft.UserControl):
         grid = ft.GridView(
             expand=True,
             child_aspect_ratio=1 / 2,
-            runs_count=7,
-            max_cross_axis_extent=150,
+            cross_axis_count=7,  # Define a fixed number of columns for the grid
         )
         for day_index in range(len(DAYS_OF_WEEK)):
             for hour in range(HOURS_IN_DAY):
@@ -59,6 +58,7 @@ class AvailabilityApp(ft.UserControl):
                 )
                 grid.controls.append(cell)
         return grid
+
 
     def get_cell_color(self, day, hour):
         if self.shared_availability[day][hour] > 0:
