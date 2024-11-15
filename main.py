@@ -1,11 +1,9 @@
 import flet as ft
-from datetime import datetime, timedelta
 
 # Constants
 DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 HOURS_IN_DAY = 24
 
-# Helper to generate grid data
 def generate_initial_availability():
     return [[0 for _ in range(HOURS_IN_DAY)] for _ in DAYS_OF_WEEK]
 
@@ -15,7 +13,6 @@ class AvailabilityApp(ft.UserControl):
         self.user_availability = generate_initial_availability()
         self.shared_availability = generate_initial_availability()
         self.is_dragging = False
-        self.selected_day = None
 
     def build(self):
         self.grid = self.create_grid()
@@ -32,10 +29,15 @@ class AvailabilityApp(ft.UserControl):
                 ),
                 self.grid,
                 ft.ElevatedButton("Submit Availability", on_click=self.submit_availability),
+                self.create_feedback_text(),
             ],
             spacing=10,
             expand=True,
         )
+
+    def create_feedback_text(self):
+        self.feedback_text = ft.Text("", color=ft.colors.GREEN)
+        return self.feedback_text
 
     def create_grid(self):
         grid = ft.GridView(
@@ -44,14 +46,14 @@ class AvailabilityApp(ft.UserControl):
             runs_count=7,
             max_cross_axis_extent=150,
         )
-        for day_index, day in enumerate(DAYS_OF_WEEK):
+        for day_index in range(len(DAYS_OF_WEEK)):
             for hour in range(HOURS_IN_DAY):
                 cell = ft.Container(
-                    on_hover=self.on_hover(day_index, hour),
                     on_click=self.on_click(day_index, hour),
+                    on_hover=self.on_hover(day_index, hour),
+                    bgcolor=self.get_cell_color(day_index, hour),
                     width=50,
                     height=50,
-                    bgcolor=self.get_cell_color(day_index, hour),
                     border=ft.Border.all(1, ft.colors.BLACK),
                 )
                 grid.controls.append(cell)
@@ -60,7 +62,7 @@ class AvailabilityApp(ft.UserControl):
     def get_cell_color(self, day, hour):
         if self.shared_availability[day][hour] > 0:
             return ft.colors.GREEN_300
-        return ft.colors.WHITE if self.user_availability[day][hour] == 0 else ft.colors.BLUE_200
+        return ft.colors.BLUE_200 if self.user_availability[day][hour] == 1 else ft.colors.WHITE
 
     def on_hover(self, day, hour):
         def handler(e):
@@ -79,11 +81,19 @@ class AvailabilityApp(ft.UserControl):
         return handler
 
     def submit_availability(self, e):
-        # Aggregate availability (mock example; replace with server logic)
         for day in range(len(DAYS_OF_WEEK)):
             for hour in range(HOURS_IN_DAY):
                 if self.user_availability[day][hour] == 1:
                     self.shared_availability[day][hour] += 1
+        self.update_grid()
+        self.feedback_text.value = "Availability submitted successfully!"
+        self.feedback_text.update()
+
+    def update_grid(self):
+        for i, cell in enumerate(self.grid.controls):
+            day = i // HOURS_IN_DAY
+            hour = i % HOURS_IN_DAY
+            cell.bgcolor = self.get_cell_color(day, hour)
         self.grid.update()
 
 def main(page: ft.Page):
