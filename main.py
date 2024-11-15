@@ -41,10 +41,10 @@ class AvailabilityApp(ft.UserControl):
         return self.feedback_text
 
     def create_grid(self):
-        grid = ft.GridView(
+        grid = ft.GridLayout(
+            columns=HOURS_IN_DAY,  # Each column represents an hour
+            spacing=2,
             expand=True,
-            child_aspect_ratio=1 / 2,
-            cross_axis_count=7,  # Define a fixed number of columns for the grid
         )
         for day_index in range(len(DAYS_OF_WEEK)):
             for hour in range(HOURS_IN_DAY):
@@ -52,13 +52,12 @@ class AvailabilityApp(ft.UserControl):
                     on_click=self.on_click(day_index, hour),
                     on_hover=self.on_hover(day_index, hour),
                     bgcolor=self.get_cell_color(day_index, hour),
-                    width=50,
-                    height=50,
+                    width=30,
+                    height=30,
                     border=ft.Border.all(1, ft.colors.BLACK),
                 )
                 grid.controls.append(cell)
         return grid
-
 
     def get_cell_color(self, day, hour):
         if self.shared_availability[day][hour] > 0:
